@@ -1,6 +1,6 @@
 title: Pneumothorax detection
 groups: ai-for-health
-finished: false
+finished: true
 type: student
 picture: vacancies/pneumothorax.jpg
 template: project-single
@@ -28,3 +28,43 @@ Detection and segmentation of pneumothorax in chest x-rays.
 
 ## Innovation
 The goal is to integrate the algorithm in a set of chest x-ray analysis algorithms that are tested in routine clinical care at the Department of Radiology and Nuclear Medicine at Radboud UMC.
+
+# Results
+
+The final thesis consists of three parts:
+1. Open-source pneumothorax detection using deep learning
+2. Unsupervised domain adaptation method: *iterative self-training*
+3. Verify the approaches on our local private dataset: *RadboudCXR*
+
+
+### Open-source pneumothorax detection
+
+Our final models are trained on the public datasets *SIIM*, *Chexpert*, and *MIMIC-CXR*. Careful hyperparameter optimization has been done (lung masking, normalizations, LR scheduling, data augmentation, etc.). One suprising result is that lung masking does not tend to work well for pneumothorax detection. This can be attributed to the fact that global image features such as the *mediastinal shift* and *deep sulcus sign* are cropped out by the lung masking algorithm. 
+
+Compared to related work, we achieve equal performance as related work by evaluating on a public dataset *ChestXray14*. Below we show the results.
+
+| Research                                        | # Pneumothorax | # Total | Model AUC |
+|-------------------------------------------------|----------------|---------|-----------|
+| ChestXray14 (Wang et al., 2017)                 | 1.060          | 22.424  | 0.7993    |
+| ChestXray14 (Taylor; Mielke, and Mongan, 2018)  | 5.302          | 112.120 | 0.75      |
+| ChestXray14 (Guendel et al., 2018)              | 1.060          | 22.424  | 0.846     |
+| ChestXray14 (Rajpurkar et al., 2018)            | 45             | 420     | 0.944     |
+| ChestXray14 (Majkowska et al., 2020)            | 195            | 1.962   | 0.94      |
+| __Our research__ (EfficientNet-B3, 1024x1024)       | 195            | 1.962   | 0.939     |
+| __Our research__ (EfficientNet-B3 + UDA, 1024x1024) | 195            | 1.962   | __0.944__     |
+| __Our research__ (DenseNet-121, 1024x1024)          | 195            | 1.962   | 0.942     |
+
+#### Radiologist performance
+
+| Model                                      | Specificity (%) | Sensitivity (%) | PPV (%) |
+|--------------------------------------------|-----------------|-----------------|---------|
+| Majkowska et al., 2020                     | 90.8            | 72.8            | 48.7    |
+| __Our research__ (Densenet-121, 1024x1024) | 91.69           | 79.4            | 45.1    |
+| Radiologists                               | 92.8            | 79.2            | 54.8    |
+
+From these results, we can conclude that radiologists are still better at assessing the pneumothorax compared to our & related work.
+
+### Unsupervised Domain Adaptation: *iterative self-training*
+
+Further, in part II we propose an unsupervised domain adaptation method – iterative self-training – that improves performance on an unseen dataset without the need for additional labelling (i.e. different hospital data). These results show an increase in performance (AUC 0.82 -> 0.89) for pneumothorax detection on public datasets CheXpert -> SIIM. This method was submitted to MIDL 2020 as a short paper.
+
